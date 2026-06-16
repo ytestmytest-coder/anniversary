@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Month — Falling for You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0A0E27;
+    --bg-deep2:#161B45;
+    --bg-deep3:#262064;
+    --gold:#E8B86D;
+    --gold-soft:#F2CC8F;
+    --blush:#E8919E;
+    --lavender:#9D97D6;
+    --cream:#F5F1E8;
+    --muted:#A6A2C4;
+    --line:rgba(245,241,232,0.16);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-deep2) 45%, var(--bg-deep3) 75%, var(--bg-deep) 100%);
+    color:var(--cream);
+    font-family:'Inter', sans-serif;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  #stars-canvas{
+    position:fixed;
+    top:0; left:0;
+    width:100vw; height:100vh;
+    z-index:0;
+    pointer-events:none;
+  }
+
+  .content{position:relative; z-index:1;}
+
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.32em;
+    text-transform:uppercase;
+    color:var(--gold);
+    display:inline-block;
+  }
+
+  em.italic, .italic{
+    font-style:italic;
+    font-weight:500;
+    color:var(--blush);
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:6vh 6vw;
+  }
+  .hero .eyebrow{margin-bottom:1.6rem; opacity:0; animation:fadeUp .9s ease-out .15s forwards;}
+  .hero h1{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(2.6rem, 8vw, 5.6rem);
+    line-height:1.05;
+    letter-spacing:-0.01em;
+    opacity:0;
+    animation:fadeUp 1s ease-out .35s forwards;
+  }
+  .hero p.sub{
+    margin-top:1.6rem;
+    max-width:32rem;
+    color:var(--muted);
+    font-size:1.05rem;
+    line-height:1.6;
+    opacity:0;
+    animation:fadeUp 1s ease-out .6s forwards;
+  }
+  @keyframes fadeUp{
+    from{opacity:0; transform:translateY(18px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  .scroll-cue{
+    margin-top:4.5rem;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:.5rem;
+    color:var(--muted);
+    font-family:'Space Mono', monospace;
+    font-size:.7rem;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    opacity:0;
+    animation:fadeUp 1s ease-out .9s forwards;
+  }
+  .scroll-cue svg{animation:bob 2s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(7px);}}
+
+  /* ---------- SECTION HEADERS ---------- */
+  .section-head{
+    text-align:center;
+    max-width:36rem;
+    margin:0 auto 4rem;
+    padding-top:8vh;
+  }
+  .section-head h2{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(1.9rem, 4.4vw, 2.9rem);
+    margin-top:.9rem;
+    line-height:1.15;
+  }
+
+  /* ---------- TIMELINE ---------- */
+  .timeline-wrap{padding-bottom:10vh;}
+  .timeline-track{
+    position:relative;
+    max-width:980px;
+    margin:0 auto;
+    padding:2rem 0 1rem;
+  }
+  .timeline-spine{
+    position:absolute;
+    top:0; bottom:0; left:50%;
+    width:2px;
+    background:linear-gradient(180deg, transparent, var(--line) 8%, var(--line) 92%, transparent);
+    transform:translateX(-50%);
+  }
+  .progress-star{
+    position:absolute;
+    left:50%;
+    top:0;
+    width:16px; height:16px;
+    transform:translate(-50%,-50%);
+    z-index:3;
+    filter:drop-shadow(0 0 8px var(--gold-soft)) drop-shadow(0 0 16px rgba(232,184,109,0.5));
+    transition:top .08s linear;
+  }
+
+  .moment{
+    position:relative;
+    width:50%;
+    padding:0 3.2rem 7.5rem;
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity .8s ease, transform .8s ease;
+  }
+  .moment.in-view{opacity:1; transform:translateY(0);}
+  .moment:nth-child(odd){left:0; text-align:right;}
+  .moment:nth-child(even){left:50%; text-align:left;}
+
+  .moment .node{
+    position:absolute;
+    top:.35rem;
+    width:11px; height:11px;
+    border-radius:50%;
+    background:var(--bg-deep);
+    border:2px solid var(--gold);
+    box-shadow:0 0 0 4px var(--bg-deep), 0 0 14px rgba(232,184,109,.55);
+  }
+  .moment:nth-child(odd) .node{right:-5.5px; transform:translateX(50%);}
+  .moment:nth-child(even) .node{left:-5.5px; transform:translateX(-50%);}
+
+  .moment .icon{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:42px; height:42px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:rgba(245,241,232,0.03);
+    margin-bottom:1.1rem;
+  }
+  .moment .icon svg{width:19px; height:19px; stroke:var(--gold-soft);}
+
+  .moment .stamp{
+    font-family:'Space Mono', monospace;
+    font-size:.78rem;
+    color:var(--lavender);
+    letter-spacing:.06em;
+    display:block;
+    margin-bottom:.5rem;
+  }
+  .moment h3{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(1.35rem, 2.6vw, 1.7rem);
+    line-height:1.2;
+    margin-bottom:.7rem;
+  }
+  .moment p.line{
+    color:var(--muted);
+    font-size:.98rem;
+    line-height:1.6;
+    max-width:24rem;
+  }
+  .moment:nth-child(odd) p.line{margin-left:auto;}
+  .moment:nth-child(even) p.line{margin-right:auto;}
+
+  .song-block{margin-top:1.3rem; display:inline-block; max-width:24rem;}
+  .moment:nth-child(odd) .song-block{margin-left:auto;}
+  .moment:nth-child(even) .song-block{margin-right:auto;}
+  .song-tag{
+    font-family:'Space Mono', monospace;
+    font-size:.65rem;
+    letter-spacing:.16em;
+    color:var(--lavender);
+    text-transform:uppercase;
+    display:block;
+    margin-bottom:.4rem;
+  }
+  .song-name{
+    font-style:italic;
+    color:var(--gold-soft);
+    font-family:'Fraunces', serif;
+    font-size:1rem;
+    display:block;
+    margin-bottom:.7rem;
+  }
+  .play-song-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    background:rgba(245,241,232,0.04);
+    border:1px solid var(--line);
+    color:var(--cream);
+    font-family:'Inter', sans-serif;
+    font-size:.8rem;
+    padding:.5rem 1.05rem;
+    border-radius:999px;
+    cursor:pointer;
+    transition:border-color .25s, color .25s, background .25s;
+  }
+  .play-song-btn:hover{border-color:var(--gold); color:var(--gold-soft); background:rgba(232,184,109,0.07);}
+  .play-song-btn:focus-visible{outline:2px solid var(--gold); outline-offset:3px;}
+  .play-song-btn svg{width:12px; height:12px; fill:currentColor; flex-shrink:0;}
+  .song-embed{
+    width:100%;
+    max-width:300px;
+    border-radius:12px;
+    overflow:hidden;
+    border:1px solid var(--line);
+    aspect-ratio:16/9;
+  }
+  .moment:nth-child(odd) .song-embed{margin-left:auto;}
+  .moment:nth-child(even) .song-embed{margin-right:auto;}
+  .song-embed iframe{width:100%; height:100%; border:0; display:block;}
+  .finale .song-block{margin:2.4rem auto 0; display:flex; flex-direction:column; align-items:center; text-align:center;}
+  .finale .song-embed{margin:0 auto;}
+
+  /* ---------- COUNTER ---------- */
+  .counter-section{
+    text-align:center;
+    padding:6vh 6vw 12vh;
+  }
+  .counter-grid{
+    display:flex;
+    justify-content:center;
+    gap:clamp(1rem,4vw,2.4rem);
+    margin-top:2.6rem;
+    flex-wrap:wrap;
+  }
+  .counter-unit{display:flex; flex-direction:column; align-items:center; min-width:72px;}
+  .counter-unit .num{
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size:clamp(2rem,6vw,3.2rem);
+    color:var(--gold-soft);
+    line-height:1;
+  }
+  .counter-unit .label{
+    margin-top:.5rem;
+    font-size:.68rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .counter-sub{
+    margin-top:2.4rem;
+    color:var(--muted);
+    font-size:.95rem;
+    font-style:italic;
+  }
+
+  /* ---------- FINALE ---------- */
+  .finale{
+    position:relative;
+    min-height:90vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    overflow:hidden;
+    padding:8vh 6vw;
+  }
+  .falling-layer{
+    position:absolute; inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:0;
+  }
+  .falling-item{
+    position:absolute;
+    top:-5%;
+    will-change:transform;
+    animation-name:fallDown;
+    animation-timing-function:linear;
+    animation-iteration-count:infinite;
+  }
+  @keyframes fallDown{
+    0%{transform:translate(0,0) rotate(0deg); opacity:0;}
+    8%{opacity:1;}
+    92%{opacity:1;}
+    100%{transform:translate(var(--drift,0px), 115vh) rotate(180deg); opacity:0;}
+  }
+
+  .finale-inner{position:relative; z-index:1;}
+  .finale .eyebrow{margin-bottom:1.4rem;}
+  .finale h2{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(1.9rem, 5vw, 3.1rem);
+    line-height:1.25;
+    max-width:34rem;
+  }
+  .finale h2 .accent{
+    display:block;
+    font-style:italic;
+    color:var(--blush);
+    font-size:clamp(2.4rem, 7vw, 4.4rem);
+    margin-top:.4rem;
+  }
+  .replay-btn{
+    margin-top:3rem;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--cream);
+    font-family:'Space Mono', monospace;
+    font-size:.72rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    padding:.85rem 1.7rem;
+    border-radius:999px;
+    cursor:pointer;
+    transition:border-color .25s, color .25s, background .25s;
+  }
+  .replay-btn:hover{border-color:var(--gold); color:var(--gold-soft); background:rgba(232,184,109,0.06);}
+  .replay-btn:focus-visible{outline:2px solid var(--gold); outline-offset:3px;}
+
+  footer{
+    text-align:center;
+    padding:3rem 0 4rem;
+    font-family:'Space Mono', monospace;
+    font-size:.7rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+    position:relative;
+    z-index:1;
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width:760px){
+    .timeline-spine{left:22px;}
+    .progress-star{left:22px;}
+    .moment{width:100%; left:0 !important; text-align:left !important; padding:0 1.6rem 4.5rem 4.6rem;}
+    .moment .node{left:-37.5px !important; right:auto !important; transform:none !important; top:.4rem;}
+    .moment p.line, .moment:nth-child(odd) p.line, .moment:nth-child(even) p.line{margin:0;}
+    .counter-grid{gap:1rem;}
+    .counter-unit{min-width:60px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .hero .eyebrow,.hero h1,.hero p.sub,.scroll-cue{animation:none; opacity:1; transform:none;}
+    .scroll-cue svg{animation:none;}
+    .falling-item{animation:none; opacity:0;}
+    .moment{transition:opacity .3s ease;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+
+<div class="content">
+
+  <!-- HERO -->
+  <section class="hero">
+    <span class="eyebrow">a look back</span>
+    <h1>One Month.<br><span class="italic">Three Moments.</span></h1>
+    <p class="sub">Before this, we were strangers. Then — somehow, in the space of three days — we weren't.</p>
+    <div class="scroll-cue">
+      <span>scroll to relive it</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 4v15M5 12l7 7 7-7"/></svg>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="timeline-wrap" id="timeline">
+    <div class="section-head">
+      <span class="eyebrow">how it started</span>
+      <h2>Every fall begins<br>with a first step.</h2>
+    </div>
+
+    <div class="timeline-track" id="track">
+      <div class="timeline-spine"></div>
+      <svg class="progress-star" id="progressStar" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2l2.6 6.6L21 11l-6.4 2.4L12 20l-2.6-6.6L3 11l6.4-2.4L12 2z" fill="#F2CC8F"/>
+      </svg>
+
+      <article class="moment">
+        <span class="node"></span>
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 11.5a8.4 8.4 0 0 1-1.1 4.2 8.5 8.5 0 0 1-7.4 4.3 8.4 8.4 0 0 1-4.2-1.1L3 21l2.1-5.3a8.4 8.4 0 0 1-1.1-4.2 8.5 8.5 0 0 1 4.3-7.4 8.4 8.4 0 0 1 4.2-1.1h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </span>
+        <span class="stamp">May 13 &nbsp;·&nbsp; 11:55 AM</span>
+        <h3>I Messaged You First</h3>
+        <p class="line">Just one line of text. I had no idea it was the first domino.</p>
+        <div class="song-block">
+          <span class="song-tag">the moment's song</span>
+          <span class="song-name">Khairiyat — Arijit Singh, <em>Chhichhore</em></span>
+          <button class="play-song-btn" data-video="ZxiETzt9icM" data-start="46" data-end="64" onclick="playSong(this)">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            play this line
+          </button>
+        </div>
+      </article>
+
+      <article class="moment">
+        <span class="node"></span>
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12h3v3H2v-3zm5-4h3v11H7V8zm5-3h3v17h-3V5zm5 5h3v7h-3v-7z"/></svg>
+        </span>
+        <span class="stamp">May 13 &nbsp;·&nbsp; 6:57 PM</span>
+        <h3>I Heard Your Voice First</h3>
+        <p class="line">Seven hours later, your voice came through — and rearranged the rest of my day.</p>
+        <div class="song-block">
+          <span class="song-tag">the moment's song</span>
+          <span class="song-name">Tum Hi Ho — Arijit Singh, <em>Aashiqui 2</em></span>
+          <button class="play-song-btn" data-video="IJq0yyWug1k" data-start="50" data-end="68" onclick="playSong(this)">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            play this line
+          </button>
+        </div>
+      </article>
+
+      <article class="moment">
+        <span class="node"></span>
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </span>
+        <span class="stamp">May 16 &nbsp;·&nbsp; 4:07 PM</span>
+        <h3>I Saw You First</h3>
+        <p class="line">Three days in, I finally saw you. Every sentence I'd planned just left the room.</p>
+        <div class="song-block">
+          <span class="song-tag">the moment's song</span>
+          <span class="song-name">Tujhe Dekha To — Lata Mangeshkar &amp; Kumar Sanu, <em>DDLJ</em></span>
+          <button class="play-song-btn" data-video="cNV5hLSa9H8" data-start="15" data-end="33" onclick="playSong(this)">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            play this line
+          </button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- COUNTER -->
+  <section class="counter-section">
+    <span class="eyebrow">still counting</span>
+    <h2 style="font-family:'Fraunces',serif; font-weight:500; font-size:clamp(1.7rem,4vw,2.4rem); margin-top:.8rem;">And somehow, it's already been</h2>
+    <div class="counter-grid" id="counterGrid">
+      <div class="counter-unit"><span class="num" id="cDays">00</span><span class="label">days</span></div>
+      <div class="counter-unit"><span class="num" id="cHours">00</span><span class="label">hours</span></div>
+      <div class="counter-unit"><span class="num" id="cMins">00</span><span class="label">minutes</span></div>
+      <div class="counter-unit"><span class="num" id="cSecs">00</span><span class="label">seconds</span></div>
+    </div>
+    <p class="counter-sub">since that first 11:55 AM hello.</p>
+  </section>
+
+  <!-- FINALE -->
+  <section class="finale" id="finale">
+    <div class="falling-layer" id="fallingLayer"></div>
+    <div class="finale-inner">
+      <span class="eyebrow">and that was that</span>
+      <h2>After that, I was already yours.<span class="accent">Falling.</span></h2>
+      <button class="replay-btn" id="replayBtn">watch it fall again</button>
+      <div class="song-block">
+        <span class="song-tag">our song</span>
+        <span class="song-name">Tera Hone Laga Hoon — Atif Aslam, <em>Ajab Prem Ki Ghazab Kahani</em></span>
+        <button class="play-song-btn" data-video="Fa4ZGazat0o" data-start="50" data-end="70" onclick="playSong(this)">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          play this line
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <footer>— happy one month, and many more —</footer>
+
+</div>
+
+<script>
+  /* ---------------- STARFIELD + SHOOTING STARS ---------------- */
+  const canvas = document.getElementById('stars-canvas');
+  const ctx = canvas.getContext('2d');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let stars = [];
+  let shooters = [];
+
+  function resizeCanvas(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const count = Math.floor((canvas.width * canvas.height) / 9000);
+    stars = Array.from({length: count}, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.3 + 0.3,
+      base: Math.random() * 0.5 + 0.3,
+      speed: Math.random() * 1.4 + 0.4,
+      phase: Math.random() * Math.PI * 2
+    }));
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  function maybeSpawnShooter(){
+    if (reduceMotion) return;
+    if (Math.random() < 0.012 && shooters.length < 2){
+      const startX = Math.random() * canvas.width * 0.7;
+      shooters.push({
+        x: startX, y: Math.random() * canvas.height * 0.3,
+        vx: 7 + Math.random() * 4, vy: 3 + Math.random() * 2,
+        life: 1
+      });
+    }
+  }
+
+  let t = 0;
+  function animateStars(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    t += 0.016;
+
+    ctx.fillStyle = '#F5F1E8';
+    stars.forEach(s => {
+      const a = reduceMotion ? s.base : s.base + Math.sin(t * s.speed + s.phase) * 0.3;
+      ctx.globalAlpha = Math.max(0, a);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    maybeSpawnShooter();
+    shooters.forEach(sh => {
+      const grad = ctx.createLinearGradient(sh.x, sh.y, sh.x - sh.vx * 8, sh.y - sh.vy * 8);
+      grad.addColorStop(0, 'rgba(245,241,232,' + sh.life + ')');
+      grad.addColorStop(1, 'rgba(245,241,232,0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(sh.x, sh.y);
+      ctx.lineTo(sh.x - sh.vx * 8, sh.y - sh.vy * 8);
+      ctx.stroke();
+      sh.x += sh.vx; sh.y += sh.vy; sh.life -= 0.02;
+    });
+    shooters = shooters.filter(sh => sh.life > 0 && sh.y < canvas.height + 50);
+
+    requestAnimationFrame(animateStars);
+  }
+  animateStars();
+
+  /* ---------------- TIMELINE PROGRESS STAR ---------------- */
+  const track = document.getElementById('track');
+  const progressStar = document.getElementById('progressStar');
+
+  function updateProgressStar(){
+    const rect = track.getBoundingClientRect();
+    const trackHeight = track.offsetHeight;
+    const viewportH = window.innerHeight;
+    const start = viewportH * 0.5;
+    const traveled = start - rect.top;
+    const progress = Math.min(1, Math.max(0, traveled / (trackHeight)));
+    progressStar.style.top = (progress * trackHeight) + 'px';
+  }
+  window.addEventListener('scroll', updateProgressStar, { passive: true });
+  window.addEventListener('resize', updateProgressStar);
+  updateProgressStar();
+
+  /* ---------------- MOMENT REVEAL ---------------- */
+  const moments = document.querySelectorAll('.moment');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('in-view');
+    });
+  }, { threshold: 0.25 });
+  moments.forEach(m => observer.observe(m));
+
+  /* ---------------- LIVE COUNTER ---------------- */
+  const start = new Date(2026, 4, 13, 11, 55, 0); // May 13, 2026, 11:55 AM
+  function pad(n){ return n.toString().padStart(2, '0'); }
+  function updateCounter(){
+    const now = new Date();
+    let diff = Math.max(0, now - start);
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
+    document.getElementById('cDays').textContent = days;
+    document.getElementById('cHours').textContent = pad(hours);
+    document.getElementById('cMins').textContent = pad(mins);
+    document.getElementById('cSecs').textContent = pad(secs);
+  }
+  updateCounter();
+  setInterval(updateCounter, 1000);
+
+  /* ---------------- SONG CLIPS ---------------- */
+  function playSong(btn){
+    const videoId = btn.dataset.video;
+    const start = btn.dataset.start;
+    const end = btn.dataset.end;
+    const wrap = document.createElement('div');
+    wrap.className = 'song-embed';
+    wrap.innerHTML = '<iframe src="https://www.youtube.com/embed/' + videoId +
+      '?start=' + start + '&end=' + end + '&autoplay=1&rel=0" ' +
+      'title="song clip" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+    btn.replaceWith(wrap);
+  }
+
+  /* ---------------- FALLING FINALE LAYER ---------------- */
+  const fallingLayer = document.getElementById('fallingLayer');
+  const glyphs = ['✦', '✧', '♡', '✦'];
+  const colors = ['#E8B86D', '#E8919E', '#9D97D6', '#F2CC8F'];
+
+  function spawnFallingItems(){
+    fallingLayer.innerHTML = '';
+    if (reduceMotion) return;
+    const n = 26;
+    for (let i = 0; i < n; i++){
+      const el = document.createElement('span');
+      const size = 10 + Math.random() * 16;
+      const left = Math.random() * 100;
+      const duration = 7 + Math.random() * 8;
+      const delay = Math.random() * 10;
+      const drift = (Math.random() * 120 - 60) + 'px';
+      el.className = 'falling-item';
+      el.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+      el.style.left = left + '%';
+      el.style.fontSize = size + 'px';
+      el.style.color = colors[Math.floor(Math.random() * colors.length)];
+      el.style.animationDuration = duration + 's';
+      el.style.animationDelay = '-' + delay + 's';
+      el.style.setProperty('--drift', drift);
+      fallingLayer.appendChild(el);
+    }
+  }
+  spawnFallingItems();
+
+  document.getElementById('replayBtn').addEventListener('click', () => {
+    spawnFallingItems();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>
